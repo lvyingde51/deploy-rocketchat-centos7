@@ -8,7 +8,7 @@
 # 1. change root URLs
 # 2. make script executable
 # 3. run the script
-# TODO: make interactive, possibly with Python
+# TODO: make interactive and retest dependencies
 ######################################################
 # system update
 yum -y update # system update
@@ -17,7 +17,7 @@ yum -y install epel-release vim && yum -y update
 
 # add mongodb repo with config below
 touch /etc/yum.repos.d/mongodb-org-3.2.repo
-cat <<EOT >> /etc/yum.repos.d/mongodb-org-3.2.repo
+cat <<'EOT' >> /etc/yum.repos.d/mongodb-org-3.2.repo
 [mongodb-org-3.2]
 name=MongoDB Repository
 baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.2/x86_64/
@@ -32,7 +32,7 @@ yum install -y nodejs httpd curl GraphicsMagick npm mongodb-org-server mongodb-o
 chkconfig mongod on
 
 # install node dependencies
-npm install -g inherits # install node dependencies
+npm install -g inherits
 npm install -g n
 
 # install node version 4.5
@@ -47,17 +47,17 @@ cd Rocket.Chat/programs/server
 npm install
 
 # Add to systemd
-cat <<EOT >> /usr/lib/systemd/system/rocketchat.service
+cat <<'EOT' >> /usr/lib/systemd/system/rocketchat.service
 [Unit]
 Description=The Rocket.Chat server
 After=network.target remote-fs.target nss-lookup.target httpd.target mongod.target
-Service]
+[Service]
 ExecStart=/usr/local/bin/node /opt/Rocket.Chat/main.js
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=rocketchat
 User=root
-Environment=MONGO_URL=mongodb://localhost:27017/rocketchat ROOT_URL=http://192.168.100.239:3000/ PORT=3000 # change IP address
+Environment=MONGO_URL=mongodb://localhost:27017/rocketchat ROOT_URL=http://192.168.100.239:3000/ PORT=3000
 [Install]
 WantedBy=multi-user.target
 EOT
